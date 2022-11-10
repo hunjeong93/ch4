@@ -24,7 +24,7 @@ public class BoardController {
     BoardService boardService;
 
     @PostMapping("/modify")
-    public String modify(BoardDto boardDto, Model m, HttpSession session,RedirectAttributes rattr) {
+    public String modify(BoardDto boardDto, Integer page, Integer pageSize, Model m, HttpSession session,RedirectAttributes rattr) {
         String writer = (String)session.getAttribute("id");
         boardDto.setWriter(writer);
 
@@ -35,12 +35,16 @@ public class BoardController {
                 throw new Exception("Modify failed");
             }
 
+            rattr.addAttribute("page", page);
+            rattr.addAttribute("pageSize", pageSize);
             rattr.addFlashAttribute("msg", "MOD_OK");
 
             return "redirect:/board/list";
         } catch (Exception e) {
             e.printStackTrace();
             m.addAttribute(boardDto);  // 에러 발생시 m에 담긴내용 유지
+            m.addAttribute("page", page);
+            m.addAttribute("pageSize", pageSize);
             m.addAttribute("msg", "MOD_ERR");
             return "board";
         }
