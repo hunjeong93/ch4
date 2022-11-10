@@ -1,9 +1,15 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@taglib prefix="c" uri="http://java.sun.com/jstl/core_rt" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt_rt" %>
+<%@ page session="true"%>
+<c:set var="loginId" value="${sessionScope.id}"/>
+<c:set var="loginOutLink" value="${loginId=='' ? '/login/login' : '/login/logout'}"/>
+<c:set var="loginOut" value="${loginId=='' ? 'Login' : 'ID='+=loginId}"/>
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <title>fastcampus</title>
     <link rel="stylesheet" href="<c:url value='/css/menu.css'/>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-1.11.3.js"></script>
@@ -14,6 +20,7 @@
             padding: 0;
             font-family: "Noto Sans KR", sans-serif;
         }
+
         a {
             text-decoration: none;
             color: black;
@@ -23,6 +30,7 @@
             border: none;
             outline: none;
         }
+
         .board-container {
             width: 60%;
             height: 1200px;
@@ -52,9 +60,11 @@
             border: 1px solid #ccc;
             color: gray;
         }
+
         .search-option > option {
             text-align: center;
         }
+
         .search-input {
             color: gray;
             background-color: white;
@@ -67,6 +77,7 @@
         .search-input::placeholder {
             color: gray;
         }
+
         .search-button {
             /* 메뉴바의 검색 버튼 아이콘  */
             width: 20%;
@@ -81,14 +92,17 @@
         .search-button:hover {
             color: rgb(165, 165, 165);
         }
+
         table {
             border-collapse: collapse;
             width: 100%;
             border-top: 2px solid rgb(39, 39, 39);
         }
+
         tr:nth-child(even) {
             background-color: #f0f0f070;
         }
+
         th,
         td {
             width:300px;
@@ -96,22 +110,28 @@
             padding: 10px 12px;
             border-bottom: 1px solid #ddd;
         }
+
         td {
             color: rgb(53, 53, 53);
         }
+
         .no      { width:150px;}
         .title   { width:50%;  }
+
         td.title   { text-align: left;  }
         td.writer  { text-align: left;  }
         td.viewcnt { text-align: right; }
+
         td.title:hover {
             text-decoration: underline;
         }
+
         .paging {
             color: black;
             width: 100%;
             align-items: center;
         }
+
         .page {
             color: black;
             padding: 6px;
@@ -122,6 +142,7 @@
             border-radius: 5px;
             color: rgb(24, 24, 24);
         }
+
         .paging-container {
             width:100%;
             height: 70px;
@@ -139,6 +160,7 @@
             border-radius: 5px;
             margin-left: 30px;
         }
+
         .btn-write:hover {
             text-decoration: underline;
         }
@@ -149,10 +171,10 @@
     <ul>
         <li id="logo">fastcampus</li>
         <li><a href="<c:url value='/'/>">Home</a></li>
-        <li><a href="<c:url value='/board/list'/>">board</a></li>
-        <li><a href="<c:url value='/login/login'/>">login</a></li>
+        <li><a href="<c:url value='/board/list'/>">Board</a></li>
+        <li><a href="<c:url value='${loginOutLink}'/>">${loginOut}</a></li>
         <li><a href="<c:url value='/register/add'/>">Sign in</a></li>
-        <li><a href=""><i class="fas fa-search small"></i></a></li>
+        <li><a href=""><i class="fa fa-search"></i></a></li>
     </ul>
 </div>
 <script>
@@ -161,21 +183,21 @@
     if(msg=="READ_ERR")  alert("삭제되었거나 없는 게시물입니다.");
     if(msg=="DEL_ERR")   alert("삭제되었거나 없는 게시물입니다.");
 
-    if(msg=="WRT_OK") alert("성공적으로 등록되었습니다.");
-    if(msg=="DEL_OK") alert("성공적으로 삭제되었습니다.");
-    if(msg=="DEL_ERR") alert("삭제에 실패했습니다.");
+    if(msg=="DEL_OK")    alert("성공적으로 삭제되었습니다.");
+    if(msg=="WRT_OK")    alert("성공적으로 등록되었습니다.");
+    if(msg=="MOD_OK")    alert("성공적으로 수정되었습니다.");
 </script>
 <div style="text-align:center">
     <div class="board-container">
         <div class="search-container">
             <form action="<c:url value="/board/list"/>" class="search-form" method="get">
                 <select class="search-option" name="option">
-                    <option value="A" ${option=='A' ? "selected" : ""}>제목+내용</option>
-                    <option value="T" ${option=='T' ? "selected" : ""}>제목만</option>
-                    <option value="W" ${option=='W' ? "selected" : ""}>작성자</option>
+                    <option value="A" ${ph.sc.option=='A' || ph.sc.option=='' ? "selected" : ""}>제목+내용</option>
+                    <option value="T" ${ph.sc.option=='T' ? "selected" : ""}>제목만</option>
+                    <option value="W" ${ph.sc.option=='W' ? "selected" : ""}>작성자</option>
                 </select>
 
-                <input type="text" name="keyword" class="search-input" type="text" value="${param.keyword}" placeholder="검색어를 입력해주세요">
+                <input type="text" name="keyword" class="search-input" type="text" value="${ph.sc.keyword}" placeholder="검색어를 입력해주세요">
                 <input type="submit" class="search-button" value="검색">
             </form>
             <button id="writeBtn" class="btn-write" onclick="location.href='<c:url value="/board/write"/>'"><i class="fa fa-pencil"></i> 글쓰기</button>
@@ -192,7 +214,7 @@
             <c:forEach var="boardDto" items="${list}">
                 <tr>
                     <td class="no">${boardDto.bno}</td>
-                    <td class="title"><a href="<c:url value="/board/read?bno=${boardDto.bno}&page=${ph.page}&pageSize=${ph.pageSize}"/>">${boardDto.title}</a></td>
+                    <td class="title"><a href="<c:url value="/board/read${ph.sc.queryString}&bno=${boardDto.bno}"/>">${boardDto.title}</a></td>
                     <td class="writer">${boardDto.writer}</td>
                     <c:choose>
                         <c:when test="${boardDto.reg_date.time >= startOfToday}">
@@ -214,13 +236,13 @@
                 </c:if>
                 <c:if test="${totalCnt!=null && totalCnt!=0}">
                     <c:if test="${ph.showPrev}">
-                        <a class="page" href="<c:url value="/board/list?page=${ph.beginPage-1}"/>">&lt;</a>
+                        <a class="page" href="<c:url value="/board/list${ph.sc.getQueryString(ph.beginPage-1)}"/>">&lt;</a>
                     </c:if>
                     <c:forEach var="i" begin="${ph.beginPage}" end="${ph.endPage}">
-                        <a class="page ${i==ph.page? "paging-active" : ""}" href="<c:url value="/board/list?page=${i}"/>">${i}</a>
+                        <a class="page ${i==ph.sc.page? "paging-active" : ""}" href="<c:url value="/board/list${ph.sc.getQueryString(i)}"/>">${i}</a>
                     </c:forEach>
                     <c:if test="${ph.showNext}">
-                        <a class="page" href="<c:url value="/board/list?page=${ph.endPage+1}"/>">&gt;</a>
+                        <a class="page" href="<c:url value="/board/list${ph.sc.getQueryString(ph.endPage+1)}"/>">&gt;</a>
                     </c:if>
                 </c:if>
             </div>
